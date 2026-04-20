@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import errorHandler from "./middlewares/errorHandler.js";
+import errorHandler from "./middlewares/errorHandler.middleware.js";
 
 const app = express();
 

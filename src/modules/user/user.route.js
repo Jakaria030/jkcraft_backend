@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { changePasswordSchema, loginSchema, registerSchema, updateProfileSchema } from "./user.validation.js";
-import validate from "../../middlewares/validate.js";
+import validate from "../../middlewares/validate.middleware.js";
 import { changePassword, getProfile, login, logout, refreshAccessToken, register, updateProfile } from "./user.controller.js";
 import verifyToken from "../../middlewares/auth.middleware.js";
 
