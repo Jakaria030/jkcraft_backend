@@ -13,7 +13,6 @@ const projectSchema = new mongoose.Schema(
         },
         thumbnail: {
             type: String,
-            default: "",
         },
         projectType: {
             type: String,
@@ -23,6 +22,7 @@ const projectSchema = new mongoose.Schema(
         userId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
+            required: true,
         },
         currentVersionId: {
             type: mongoose.Schema.Types.ObjectId,
@@ -41,10 +41,8 @@ const projectSchema = new mongoose.Schema(
     },
     {
         timestamps: true,
-    }
+    },
 );
-
-projectSchema.index({ userId: 1, url: 1 }, { unique: true });
 
 const Project = mongoose.model("Project", projectSchema);
 

@@ -14,24 +14,22 @@ export const createProject = asyncHandler(async (req, res) => {
         throw new ApiError(400, "name and gjsData is required");
     }
 
-    const userId = req.user._id;
-    const slug = generateSlug(name);
-
     const project = await Project.create(
         {
             name,
             description,
             projectType,
-            userId,
-            slug,
+            userId: req.user._id,
+            slug: generateSlug(name),
         },
     );
 
     const version = await Version.create(
         {
             projectId: project._id,
+            versionNo: 1,
             gjsData,
-        }
+        },
     );
 
     project.currentVersionId = version._id;

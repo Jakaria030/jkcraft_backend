@@ -21,7 +21,7 @@ const stateSchema = new mongoose.Schema(
     },
     {
         timestamps: true,
-    }
+    },
 );
 
 const State = mongoose.model("State", stateSchema);

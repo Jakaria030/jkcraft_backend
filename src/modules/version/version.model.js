@@ -9,7 +9,7 @@ const versionSchema = new mongoose.Schema(
         },
         versionNo: {
             type: Number,
-            default: 1,
+            required: true,
         },
         gjsData: {
             type: mongoose.Schema.Types.Mixed,
@@ -22,7 +22,7 @@ const versionSchema = new mongoose.Schema(
     },
     {
         timestamps: true,
-    }
+    },
 );
 
 const Version = mongoose.model("Version", versionSchema);

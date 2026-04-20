@@ -7,4 +7,4 @@ export const generateSlug = (name) => {
         .replace(/-+/g, "-");
 
     return `${slug}-${Date.now()}`;
-}
+};
