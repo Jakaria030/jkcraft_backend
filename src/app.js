@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import errorHandler from "./middlewares/errorHandler.js";
 
 const app = express();
 
@@ -14,5 +15,7 @@ app.get("/", (_req, res) => {
     res.send("JKCraft backend is running!");
 });
 
+// Global error handler
+app.use(errorHandler);
 
 export default app;
