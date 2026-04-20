@@ -11,9 +11,10 @@ app.use(express.urlencoded({ extended: true }));
 
 // Import routes
 import userRoutes from "./modules/user/user.route.js";
-
+import projectRoutes from "./modules/project/project.route.js";
 
 app.use("/api/users", userRoutes);
+app.use("/api/projects", projectRoutes);
 
 // Health check route
 app.get("/", (_req, res) => {
