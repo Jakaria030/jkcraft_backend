@@ -108,7 +108,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
 
 export const getProfile = asyncHandler(async (req, res) => {
     res.status(200).json(
-        new ApiResponse(200, "Profile fetched successfully", req.user)
+        new ApiResponse(200, "Profile fetched successfully", { user: req.user })
     );
 });
 
@@ -122,7 +122,7 @@ export const updateProfile = asyncHandler(async (req, res) => {
     ).select("-password -refreshToken -__v -createdAt -updatedAt");
 
     res.status(200).json(
-        new ApiResponse(200, "Profile updated successfully", user)
+        new ApiResponse(200, "Profile updated successfully", { user })
     );
 });
 
