@@ -1,19 +1,21 @@
 import mongoose from "mongoose";
 
-const versionSchema = new mongoose.Schema(
+const publishSchema = new mongoose.Schema(
     {
         projectId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Project",
             required: true,
-        },
-        versionNo: {
-            type: Number,
-            required: true,
+            unique: true,
         },
         gjsData: {
             type: mongoose.Schema.Types.Mixed,
             required: true,
+        },
+        url: {
+            type: String,
+            required: true,
+            unique: true,
         },
     },
     {
@@ -21,6 +23,6 @@ const versionSchema = new mongoose.Schema(
     },
 );
 
-const Version = mongoose.model("Version", versionSchema);
+const Publish = mongoose.model("Publish", publishSchema);
 
-export default Version;
+export default Publish;
