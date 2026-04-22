@@ -1,10 +1,14 @@
+import mongoose from "mongoose";
 import { z } from "zod";
 
 export const createProjectSchema = z.object({
     name: z.string().min(1, "Name is required").max(100, "Name is too long"),
     description: z.string().max(500, "Description is too long").optional(),
-    gjsData: z.any().optional(),
-    projectType: z.enum(["project", "template"]).optional()
+    projectType: z.enum(["template", "project"]).optional(),
+    templateId: z.string()
+        .refine((val) => mongoose.Types.ObjectId.isValid(val), {
+            message: "Invalid ObjectId",
+        }),
 });
 
 export const updateProjectSchema = z.object({

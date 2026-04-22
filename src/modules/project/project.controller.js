@@ -8,13 +8,15 @@ import Project from "./project.model.js";
 
 
 export const createProject = asyncHandler(async (req, res) => {
-    const { name, description, gjsData, projectType } = req.body;
+    const { name, description, projectType, templateId } = req.body;
 
-    if (!name || !gjsData) {
-        throw new ApiError(400, "name and gjsData is required");
+    const template = await Version.findOne({ _id: templateId }).select("projectId gjsData");
+
+    if (!template) {
+        throw new ApiError(404, "Template is not found.");
     }
 
-    const project = await Project.create(
+    const newCreatedProject = await Project.create(
         {
             name,
             description,
@@ -24,28 +26,28 @@ export const createProject = asyncHandler(async (req, res) => {
         },
     );
 
-    const version = await Version.create(
+    const newCreatedVersion = await Version.create(
         {
-            projectId: project._id,
+            projectId: newCreatedProject._id,
             versionNo: 1,
-            gjsData,
+            gjsData: template.gjsData
         },
     );
 
-    project.currentVersionId = version._id;
-    await project.save();
+    newCreatedProject.currentVersionId = newCreatedVersion._id;
+    await newCreatedProject.save();
 
     await State.create(
         {
-            projectId: project._id,
-            versionId: version._id,
+            projectId: newCreatedProject._id,
+            versionId: newCreatedVersion._id,
             undoStack: [],
             redoStack: [],
         },
     );
 
     res.status(201).json(
-        new ApiResponse(201, "Project created successfully", project)
+        new ApiResponse(201, "Project created successfully", newCreatedProject)
     );
 });
 
@@ -117,5 +119,41 @@ export const updateSlug = asyncHandler(async (req, res) => {
 
     return res.status(200).json(
         new ApiResponse(200, "Slug updated successfully", project)
+    );
+});
+
+export const getTemplatesInfo = asyncHandler(async (req, res) => {
+
+    const templates = await Project.find({ projectType: "template" }).select("_id name thumbnail currentVersionId");
+
+    return res.status(200).json(
+        new ApiResponse(200, "Templates info fetch successfully", templates)
+    );
+});
+
+export const getProjects = asyncHandler(async (req, res) => {
+
+    const projects = await Project.find({ userId: req.user._id }).lean();
+
+    const versionIds = projects.map(project => project.currentVersionId).filter(Boolean);
+
+    const versions = await Version.find({
+        _id: { $in: versionIds }
+    }).select("updatedAt").lean();
+
+    const versionMap = {};
+    versions.forEach(v => {
+        versionMap[v._id.toString()] = v.updatedAt;
+    });
+
+    const modifiedProjects = projects.map(project => ({
+        ...project,
+        updatedAt: project.currentVersionId
+            ? versionMap[project.currentVersionId.toString()] || null
+            : null
+    }));
+
+    return res.status(200).json(
+        new ApiResponse(200, "Projects fetch successfully", modifiedProjects)
     );
 });
