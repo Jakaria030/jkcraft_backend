@@ -1,7 +1,10 @@
+import { deleteFromCloudinary } from "../../config/cloudinary.js";
 import ApiError from "../../utils/ApiError.js";
 import ApiResponse from "../../utils/ApiResponse.js";
 import asyncHandler from "../../utils/asyncHandler.js";
 import { generateSlug } from "../../utils/generateSlug.js";
+import File from "../file/file.model.js";
+import Publish from "../publish/publish.model.js";
 import State from "../state/state.model.js";
 import Version from "../version/version.model.js";
 import Project from "./project.model.js";
@@ -155,5 +158,42 @@ export const getProjects = asyncHandler(async (req, res) => {
 
     return res.status(200).json(
         new ApiResponse(200, "Projects fetch successfully", modifiedProjects)
+    );
+});
+
+export const deleteProject = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    const project = await Project.findById(id);
+    if (!project) {
+        throw new ApiError(404, "Project not found");
+    }
+
+    // 1. find all files
+    const files = await File.find({ projectId: id });
+
+    // 2. delete from Cloudinary
+
+    await Promise.all(
+        files.map(file => deleteFromCloudinary(file.url))
+    );
+
+    // 3. delete files from DB
+    await File.deleteMany({ projectId: id });
+
+    // 4. delete versions
+    await Version.deleteMany({ projectId: id });
+
+    // 5. Delete states
+    await State.deleteMany({ projectId: id });
+
+    // 6. Delete published project
+    await Publish.deleteOne({ projectId: id });
+
+    // 7. delete project
+    await Project.findByIdAndDelete(id);
+
+    return res.status(200).json(
+        new ApiResponse(200, "Project deleted successfully")
     );
 });
