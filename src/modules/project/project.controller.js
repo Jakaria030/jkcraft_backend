@@ -56,7 +56,8 @@ export const createProject = asyncHandler(async (req, res) => {
 
 export const updateProject = asyncHandler(async (req, res) => {
     const { projectId } = req.params;
-    const { name, description } = req.body;
+    const { name, description, slug } = req.body;
+    const userId = req.user._id;
 
     const project = await Project.findById(projectId);
 
@@ -64,11 +65,19 @@ export const updateProject = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Project not found");
     }
 
-    project.name = name;
+    const existingProject = await Project.findOne({
+        userId,
+        slug,
+        _id: { $ne: projectId }
+    });
 
-    if (description !== undefined) {
-        project.description = description;
+    if (existingProject) {
+        throw new ApiError(400, "Slug already exists. Try another one.");
     }
+
+    project.name = name;
+    project.description = description;
+    project.slug = slug;
 
     await project.save();
 
@@ -93,35 +102,6 @@ export const updateThumbnail = asyncHandler(async (req, res) => {
 
     return res.status(200).json(
         new ApiResponse(200, "Thumbnail updated successfully", project)
-    );
-});
-
-export const updateSlug = asyncHandler(async (req, res) => {
-    const { projectId } = req.params;
-    const { slug } = req.body;
-    const userId = req.user._id;
-
-    const project = await Project.findById(projectId);
-
-    if (!project) {
-        throw new ApiError(404, "Project not found");
-    }
-
-    const existingProject = await Project.findOne({
-        userId,
-        slug,
-    });
-
-    if (existingProject) {
-        throw new ApiError(400, "Slug already exists. Try another one.");
-    }
-
-    project.slug = slug;
-
-    await project.save();
-
-    return res.status(200).json(
-        new ApiResponse(200, "Slug updated successfully", project)
     );
 });
 
