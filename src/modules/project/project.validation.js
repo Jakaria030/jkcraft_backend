@@ -16,7 +16,3 @@ export const updateProjectSchema = z.object({
     description: z.string().max(500, "Description is too long").optional(),
     slug: z.string().min(3, "Slug must be at least 3 characters").max(100, "Slug is too long").regex(/^[a-z0-9-]+$/, "Slug can only contain lowercase letters, numbers, and hyphens")
 });
-
-export const updateThumbnailSchema = z.object({
-    thumbnail: z.string().url("Thumbnail must be a valid URL")
-});

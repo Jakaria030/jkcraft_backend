@@ -1,7 +1,8 @@
-import { deleteFromCloudinary } from "../../config/cloudinary.js";
+import { deleteFromCloudinary, uploadToCloudinary } from "../../config/cloudinary.js";
 import ApiError from "../../utils/ApiError.js";
 import ApiResponse from "../../utils/ApiResponse.js";
 import asyncHandler from "../../utils/asyncHandler.js";
+import deleteLocalFile from "../../utils/deleteLocalFile.js";
 import { generateSlug } from "../../utils/generateSlug.js";
 import File from "../file/file.model.js";
 import Publish from "../publish/publish.model.js";
@@ -88,21 +89,36 @@ export const updateProject = asyncHandler(async (req, res) => {
 
 export const updateThumbnail = asyncHandler(async (req, res) => {
     const { projectId } = req.params;
-    const { thumbnail } = req.body;
+
+    if (!req.file) {
+        throw new ApiError(400, "No file upload");
+    }
 
     const project = await Project.findById(projectId);
 
     if (!project) {
+        deleteLocalFile(req.file.path);
         throw new ApiError(404, "Project not found");
     }
 
-    project.thumbnail = thumbnail;
+    try {
+        const url = await uploadToCloudinary(req.file.path);
+        deleteLocalFile(req.file.path);
 
-    await project.save();
+        if(project?.thumbnail){
+            await deleteFromCloudinary(project.thumbnail);
+        }
 
-    return res.status(200).json(
-        new ApiResponse(200, "Thumbnail updated successfully", project)
-    );
+        project.thumbnail = url;
+        await project.save();
+
+        res.status(201).json(
+            new ApiResponse(201, "Thumbnail update successfully", project)
+        );
+    } catch (error) {
+        deleteLocalFile(req.file.path);
+        throw new ApiError(500, "File upload failed");
+    }
 });
 
 export const getTemplatesInfo = asyncHandler(async (req, res) => {
