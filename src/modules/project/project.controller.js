@@ -105,7 +105,7 @@ export const updateThumbnail = asyncHandler(async (req, res) => {
         const url = await uploadToCloudinary(req.file.path);
         deleteLocalFile(req.file.path);
 
-        if(project?.thumbnail){
+        if (project?.thumbnail) {
             await deleteFromCloudinary(project.thumbnail);
         }
 
@@ -163,6 +163,11 @@ export const deleteProject = asyncHandler(async (req, res) => {
     const project = await Project.findById(id);
     if (!project) {
         throw new ApiError(404, "Project not found");
+    }
+
+    // 0. delete thumbnail if has
+    if (project?.thumbnail) {
+        await deleteFromCloudinary(project.thumbnail);
     }
 
     // 1. find all files
