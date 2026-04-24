@@ -52,23 +52,30 @@ export const createVersion = asyncHandler(async (req, res) => {
 });
 
 export const getCurrentVersionProject = asyncHandler(async (req, res) => {
-    const { id } = req.params;
+    const { projectId } = req.params;
 
-    const version = await Version.findById(id);
+    const project = await Project.findById(projectId);
+
+    if (!project) {
+        throw new ApiError(404, "Project is not found");
+    }
+
+    const version = await Version.findById(project.currentVersionId);
 
     if (!version) {
         throw new ApiError(404, "Current Version project not found");
     }
 
     const state = await State.findOne({
-        projectId: version.projectId,
-        versionId: id,
+        projectId: projectId,
+        versionId: project.currentVersionId,
     });
 
     return res.status(200).json(
-        new ApiResponse(200, "Current version project fetch successfully", {
-            version,
-            state,
+        new ApiResponse(200, "Updated successfully.", {
+            ...version.toObject(),
+            hasUndo: state?.undoStack?.length > 0,
+            hasRedo: state?.redoStack?.length > 0,
         })
     );
 });

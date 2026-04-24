@@ -6,7 +6,7 @@ import { createVersion, getCurrentVersionProject, updateCurrentVersionProject } 
 const router = Router();
 
 router.post("/:id", verifyToken, createVersion);
-router.get("/:id", verifyToken, getCurrentVersionProject);
+router.get("/:projectId", verifyToken, getCurrentVersionProject);
 router.put("/:id", verifyToken, updateCurrentVersionProject);
 
 export default router;
