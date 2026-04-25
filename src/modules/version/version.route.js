@@ -7,6 +7,6 @@ const router = Router();
 
 router.post("/:id", verifyToken, createVersion);
 router.get("/:projectId", verifyToken, getCurrentVersionProject);
-router.put("/:id", verifyToken, updateCurrentVersionProject);
+router.put("/:projectId", verifyToken, updateCurrentVersionProject);
 
 export default router;

@@ -81,14 +81,20 @@ export const getCurrentVersionProject = asyncHandler(async (req, res) => {
 });
 
 export const updateCurrentVersionProject = asyncHandler(async (req, res) => {
-    const { id } = req.params;
+    const { projectId } = req.params;
     const { gjsData } = req.body;
 
     if (!gjsData) {
         throw new ApiError(400, "gjsData is required!");
     }
 
-    const version = await Version.findById(id);
+    const project = await Project.findById(projectId);
+
+    if (!project) {
+        throw new ApiError(404, "Project is not found");
+    }
+
+    const version = await Version.findById(project?.currentVersionId);
 
     if (!version) {
         throw new ApiError(404, "Current Version project not found");
