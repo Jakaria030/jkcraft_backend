@@ -72,7 +72,7 @@ export const getCurrentVersionProject = asyncHandler(async (req, res) => {
     });
 
     return res.status(200).json(
-        new ApiResponse(200, "Updated successfully.", {
+        new ApiResponse(200, "Fetcht successfully.", {
             ...version.toObject(),
             hasUndo: state?.undoStack?.length > 0,
             hasRedo: state?.redoStack?.length > 0,
@@ -122,9 +122,10 @@ export const updateCurrentVersionProject = asyncHandler(async (req, res) => {
     await version.save();
 
     return res.status(200).json(
-        new ApiResponse(200, "Version updated successfully", {
-            version,
-            state,
+        new ApiResponse(200, "Updated successfully.", {
+            ...version.toObject(),
+            hasUndo: state?.undoStack?.length > 0,
+            hasRedo: state?.redoStack?.length > 0,
         })
     );
 });
