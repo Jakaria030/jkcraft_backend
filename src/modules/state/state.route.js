@@ -5,7 +5,7 @@ import { redoVersionProject, undoVersionProject } from "./state.controller.js";
 
 const router = Router();
 
-router.put("/redo/:id", verifyToken, redoVersionProject);
-router.put("/undo/:id", verifyToken, undoVersionProject);
+router.put("/redo/:projectId", verifyToken, redoVersionProject);
+router.put("/undo/:projectId", verifyToken, undoVersionProject);
 
 export default router;

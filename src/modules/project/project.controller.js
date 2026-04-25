@@ -45,7 +45,7 @@ export const createProject = asyncHandler(async (req, res) => {
         {
             projectId: newCreatedProject._id,
             versionId: newCreatedVersion._id,
-            undoStack: [],
+            undoStack: [template.gjsData],
             redoStack: [],
         },
     );

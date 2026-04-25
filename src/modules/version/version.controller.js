@@ -43,7 +43,7 @@ export const createVersion = asyncHandler(async (req, res) => {
         {
             projectId,
             versionId: newVersion._id,
-            undoStack: [],
+            undoStack: [gjsData],
             redoStack: [],
         },
     );
@@ -74,7 +74,7 @@ export const getCurrentVersionProject = asyncHandler(async (req, res) => {
     return res.status(200).json(
         new ApiResponse(200, "Fetcht successfully.", {
             ...version.toObject(),
-            hasUndo: state?.undoStack?.length > 0,
+            hasUndo: state?.undoStack?.length > 1,
             hasRedo: state?.redoStack?.length > 0,
         })
     );
@@ -109,7 +109,7 @@ export const updateCurrentVersionProject = asyncHandler(async (req, res) => {
         state = await State.create({
             projectId: version.projectId,
             versionId: version._id,
-            undoStack: [],
+            undoStack: [gjsData],
             redoStack: [],
         });
     }
@@ -130,7 +130,7 @@ export const updateCurrentVersionProject = asyncHandler(async (req, res) => {
     return res.status(200).json(
         new ApiResponse(200, "Updated successfully.", {
             ...version.toObject(),
-            hasUndo: state?.undoStack?.length > 0,
+            hasUndo: state?.undoStack?.length > 1,
             hasRedo: state?.redoStack?.length > 0,
         })
     );
