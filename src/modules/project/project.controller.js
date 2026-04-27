@@ -14,7 +14,7 @@ import Project from "./project.model.js";
 export const createProject = asyncHandler(async (req, res) => {
     const { name, description, projectType, templateId } = req.body;
 
-    const template = await Version.findOne({ _id: templateId }).select("projectId gjsData");
+    const template = await Version.findOne({ _id: templateId }).select("projectId gjsData theme");
 
     if (!template) {
         throw new ApiError(404, "Template is not found.");
@@ -34,7 +34,8 @@ export const createProject = asyncHandler(async (req, res) => {
         {
             projectId: newCreatedProject._id,
             versionNo: 1,
-            gjsData: template.gjsData
+            gjsData: template.gjsData,
+            theme: template.theme,
         },
     );
 
