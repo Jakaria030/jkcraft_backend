@@ -15,6 +15,9 @@ const versionSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.Mixed,
             required: true,
         },
+        theme: {
+            type: mongoose.Schema.Types.Mixed,
+        },
     },
     {
         timestamps: true,

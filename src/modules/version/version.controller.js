@@ -136,3 +136,40 @@ export const updateCurrentVersionProject = asyncHandler(async (req, res) => {
     );
 });
 
+export const updateTheme = asyncHandler(async (req, res) => {
+    const { projectId } = req.params;
+    const { theme } = req.body;
+
+    if (!theme) {
+        throw new ApiError(400, "theme data is required!");
+    }
+
+    const project = await Project.findById(projectId);
+
+    if (!project) {
+        throw new ApiError(404, "Project is not found");
+    }
+
+    const version = await Version.findById(project?.currentVersionId);
+
+    if (!version) {
+        throw new ApiError(404, "Current Version project not found");
+    }
+
+    const state = await State.findOne({
+        projectId: version.projectId,
+        versionId: version._id,
+    });
+
+    version.theme = theme;
+    await version.save();
+
+    return res.status(200).json(
+        new ApiResponse(200, "Updated successfully.", {
+            ...version.toObject(),
+            hasUndo: state?.undoStack?.length > 1,
+            hasRedo: state?.redoStack?.length > 0,
+        })
+    );
+});
+
