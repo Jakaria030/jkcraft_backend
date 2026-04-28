@@ -82,7 +82,6 @@ export const getCurrentVersionProject = asyncHandler(async (req, res) => {
 
 export const updateCurrentVersionProject = asyncHandler(async (req, res) => {
     const { projectId } = req.params;
-    const callForTheme = req.query.callForTheme === "true";
     const { gjsData } = req.body;
 
     if (!gjsData) {
@@ -115,17 +114,17 @@ export const updateCurrentVersionProject = asyncHandler(async (req, res) => {
         });
     }
 
-    if (!callForTheme) {
-        state.undoStack.push(gjsData);
 
-        if (state.undoStack.length > 20) {
-            state.undoStack = state.undoStack.slice(-20);
-        }
+    state.undoStack.push(gjsData);
 
-        state.redoStack = [];
-
-        await state.save();
+    if (state.undoStack.length > 20) {
+        state.undoStack = state.undoStack.slice(-20);
     }
+
+    state.redoStack = [];
+
+    await state.save();
+
 
     version.gjsData = gjsData;
     await version.save();
@@ -163,6 +162,9 @@ export const updateTheme = asyncHandler(async (req, res) => {
         projectId: version.projectId,
         versionId: version._id,
     });
+
+    state.undoStack.pop();
+    await state.save();
 
     version.theme = theme;
     await version.save();
