@@ -82,7 +82,7 @@ export const getCurrentVersionProject = asyncHandler(async (req, res) => {
 
 export const updateCurrentVersionProject = asyncHandler(async (req, res) => {
     const { projectId } = req.params;
-    const { callForTheme } = req.query;
+    const callForTheme = req.query.callForTheme === "true";
     const { gjsData } = req.body;
 
     if (!gjsData) {
