@@ -18,6 +18,10 @@ const versionSchema = new mongoose.Schema(
         theme: {
             type: mongoose.Schema.Types.Mixed,
         },
+        fonts: {
+            type: [String],
+            default: [],
+        },
     },
     {
         timestamps: true,
