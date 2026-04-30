@@ -22,6 +22,10 @@ const versionSchema = new mongoose.Schema(
             type: [String],
             default: [],
         },
+        seo: {
+            type: [],
+            default: [],
+        }
     },
     {
         timestamps: true,
